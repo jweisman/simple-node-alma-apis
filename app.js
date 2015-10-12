@@ -22,6 +22,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Make cookies available in view
+app.use(function(req,res,next){
+    res.locals.cookies = req.cookies;
+    next();
+});
+
 app.use('/', routes);
 app.use('/scan-in', scanin);
 

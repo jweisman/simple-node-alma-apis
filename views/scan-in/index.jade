@@ -3,33 +3,33 @@ extends ../layout
 block pageContent
 	h1 #{title}
 	div.col-lg-6.col-sm-12
-		unless item
-			form(name="scanin",method="post")
-				table.table
-					tr
-						th Barcode:
-						td
-							input(type="text", placeholder="Item Barcode...", name="barcode") 
-					tr
-						th Scan In?
-						td 
-							input(type="checkbox", name="scan", id="scan", checked) 
-					tr.scanfields
-						th Library:
-						td 
-							select(name="library")
-								each l in libraries.library
-									option(value=l.code, selected=l.code=='MAIN') #{l.name}
-					tr.scanfields
-						th Circulation Desk:
-						td 
-							input(type="text", name="circ_desk", value="MAINCIRC")
-				button#btnSubmit(type="submit", class="btn btn-default") Scan In
-		else
+		form(name="scanin",method="post")
+			table.table
+				tr
+					th Barcode:
+					td
+						input(type="text", placeholder="Item Barcode...", name="barcode", value=(item? item.item_data.barcode : '')) 
+				tr
+					th Scan In?
+					td 
+						input(type="checkbox", name="scan", id="scan", checked) 
+				tr.scanfields
+					th Library:
+					td 
+						select(name="library")
+							each l in libraries.library
+								option(value=l.code, selected=l.code==(cookies.prefs ? cookies.prefs.library : '')) #{l.name}
+				tr.scanfields
+					th Circulation Desk:
+					td 
+						input(type="text", name="circ_desk", value=(cookies.prefs? cookies.prefs.circ_desk : ''))
+			button#btnSubmit(type="submit", class="btn btn-default") Scan In
+			p &nbsp;
+		if item
 			div.alert(class=item.additional_info ? 'alert-success' : 'alert-info')
-				h2 #{item.bib_data.title} by #{item.bib_data.author}
-				h3 #{item.additional_info}
-			a(href="/scan-in", class="btn btn-default") Scan In Again
+				h2 Barcode #{item.item_data.barcode} #{item.additional_info ? ' scanned' : ''}
+				h3 #{item.bib_data.title} by #{item.bib_data.author}
+				p #{item.additional_info}
 
 	script.
 		$(document).ready(function(e) {

@@ -9,7 +9,7 @@ var host = nconf.get('alma_host');
 var path = nconf.get('alma_path');
 var apikey = nconf.get('api_key');
 
-function performRequest(endpoint, method, data, success) {
+function performRequest(endpoint, method, data, callback) {
   var dataString = JSON.stringify(data);
   var headers = {
   	'Authorization': 'apikey ' + apikey,
@@ -30,26 +30,36 @@ function performRequest(endpoint, method, data, success) {
 
   request(
   	options,
-  	function(error, response, body) {
-  		if(error) console.log(error);
-  		else if (('' + response.statusCode).match(/^[4-5]\d\d$/))
-  			throw new Error('Error from server: ' + response.statusCode + 
-  				' / ' + body);
-  		else success(body);
+  	function(err, response, body) {
+      if (!err && ('' + response.statusCode).match(/^[4-5]\d\d$/)) {
+        console.log('Error from Alma: ' + body);
+        var message;
+        try {
+          var obj = JSON.parse(body);
+          message = obj.errorList.error[0].errorMessage || "Unknown error from Alma.";
+        } catch (e) {
+          message = "Unknown error from Alma.";
+        }
+        err = new Error(message);
+      }
+  		if(err) callback(err);
+  		else callback(null, body);
   	});
 }
 
-exports.get = function(url, success) {
+exports.get = function(url, callback) {
 	performRequest(url, 'GET', null, 
-		function(data) {
-			success(JSON.parse(data));
+		function(err, data) {
+      if (err) callback(err);
+      else callback(null, JSON.parse(data));
 		});
 };
 
-exports.post = function(url, data, success) {
+exports.post = function(url, data, callback) {
 	performRequest(url, 'POST', data, 
-		function(data) {
-			success(JSON.parse(data));
+		function(err, data) {
+      if (err) callback(err);
+			else callback(null, JSON.parse(data));
 		});
 };
 
