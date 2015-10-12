@@ -1,0 +1,39 @@
+extends ../layout
+
+block pageContent
+	h1 #{title}
+	div.col-lg-6.col-sm-12
+		unless item
+			form(name="scanin",method="post")
+				table.table
+					tr
+						th Barcode:
+						td
+							input(type="text", placeholder="Item Barcode...", name="barcode") 
+					tr
+						th Scan In?
+						td 
+							input(type="checkbox", name="scan", id="scan", checked) 
+					tr.scanfields
+						th Library:
+						td 
+							select(name="library")
+								each l in libraries.library
+									option(value=l.code, selected=l.code=='MAIN') #{l.name}
+					tr.scanfields
+						th Circulation Desk:
+						td 
+							input(type="text", name="circ_desk", value="MAINCIRC")
+				button#btnSubmit(type="submit", class="btn btn-default") Scan In
+		else
+			div.alert(class=item.additional_info ? 'alert-success' : 'alert-info')
+				h2 #{item.bib_data.title} by #{item.bib_data.author}
+				h3 #{item.additional_info}
+			a(href="/scan-in", class="btn btn-default") Scan In Again
+
+	script.
+		$(document).ready(function(e) {
+		    $("#scan").click(function() {
+		        $(".scanfields").css('display',this.checked ? '' : 'none');
+		    });
+		});
