@@ -36,7 +36,7 @@ function performRequest(endpoint, method, data, callback) {
         var message;
         try {
           var obj = JSON.parse(body);
-          message = obj.errorList.error[0].errorMessage || "Unknown error from Alma.";
+          message = obj.errorList.error[0].errorMessage + " (" + obj.errorList.error[0].errorCode + ")";
         } catch (e) {
           message = "Unknown error from Alma.";
         }

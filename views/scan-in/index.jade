@@ -12,7 +12,7 @@ block pageContent
 				tr
 					th Scan In?
 					td 
-						input(type="checkbox", name="scan", id="scan", checked) 
+						input(type="checkbox", name="scan", id="scan", checked=(item && item.additional_info ? "checked" : undefined)) 
 				tr.scanfields
 					th Library:
 					td 
@@ -25,15 +25,42 @@ block pageContent
 						input(type="text", name="circ_desk", value=(cookies.prefs? cookies.prefs.circ_desk : ''))
 			button#btnSubmit(type="submit", class="btn btn-default") Scan In
 			p &nbsp;
+		if error
+			div.alert.alert-danger
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+				|#{error}
 		if item
-			div.alert(class=item.additional_info ? 'alert-success' : 'alert-info')
-				h2 Barcode #{item.item_data.barcode} #{item.additional_info ? ' scanned' : ''}
-				h3 #{item.bib_data.title} by #{item.bib_data.author}
-				p #{item.additional_info}
+			div.panel.panel-default
+				div.panel-body
+					span(id="thumbnail")
+					div.lead 
+						p #{item.bib_data.title}
+						p By #{item.bib_data.author}
+					p Barcode: <strong>#{item.item_data.barcode}</strong>
+					if item.additional_info 
+						br
+						div.alert.alert-success
+							<span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+							|Item scanned
+							p <strong>Scan info:</strong> #{item.additional_info}
 
 	script.
 		$(document).ready(function(e) {
+			$(".scanfields").css('display', $("#scan").prop("checked") ? '' : 'none');
+
 		    $("#scan").click(function() {
-		        $(".scanfields").css('display',this.checked ? '' : 'none');
+		        $(".scanfields").css('display', this.checked ? '' : 'none');
 		    });
 		});
+
+		function googleBooks(data) {
+			for (isbn in data) {
+				var b = data[isbn];
+				if (b && b.thumbnail_url)
+					$('#thumbnail').prepend('<img style="float:left; width:75px; height:auto; margin-right:20px" src="'+ b.thumbnail_url + '" />')
+			}
+		}
+
+	if item && item.bib_data.isbn
+		- var isbn = item.bib_data.isbn.replace(/\D/g,'')
+		script(src="https://books.google.com/books?bibkeys=ISBN:#{isbn}&jscmd=viewapi&callback=googleBooks")

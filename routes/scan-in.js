@@ -8,7 +8,7 @@ function getLibraries(callback) {
 	alma.get('/conf/libraries', callback);
 }
 
-/* GET home page. */
+/* GET */
 router.get('/', function(req, res, next) {
 	getLibraries(
 		function(err, data) {
@@ -47,7 +47,12 @@ router.post('/', function(req, res, next) {
 		}
 	], 
 	function (err, item) {
-		if (err) return next(err);
+		if (err) {
+			if (err.message.indexOf("401690") > 0 || err.message.indexOf("401689") > 0)
+				return res.render('scan-in/index', 
+					{ title: 'Scan In Item', error: "Invalid barcode", libraries: libraries });
+			else return next(err);
+		}
 		res.render('scan-in/index',
 			{ title: 'Scan In Item', item: item, libraries: libraries });		
 
