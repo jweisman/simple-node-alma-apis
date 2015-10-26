@@ -4,13 +4,23 @@ var async = require('async');
 
 var alma = require('../alma.js');
 
-function getLibraries(callback) {
-	alma.get('/conf/libraries', callback);
+function getLibraries(req, callback) {
+	if (req.app.libraries) {
+		callback(null, req.app.libraries);
+	}
+	else {
+		alma.get('/conf/libraries', 
+			function(err, data) {
+				if (err) return callback(err);
+				req.app.libraries = data;
+				callback(null, data);
+			});
+	}
 }
 
 /* GET */
 router.get('/', function(req, res, next) {
-	getLibraries(
+	getLibraries(req, 
 		function(err, data) {
 			if (err) return next(err);
   			res.render('scan-in/index', 
@@ -24,7 +34,7 @@ router.post('/', function(req, res, next) {
 	var item, libraries;
 	async.waterfall([
 		function (callback) {
-			getLibraries(callback);
+			getLibraries(req, callback);
 		},
 		function (data, callback) {
 			libraries = data;
