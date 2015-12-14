@@ -23,4 +23,4 @@ On any machine with [Node.js](https://nodejs.org) and [Git](http://git-scm.com/)
 
 License
 -------
-The code for this applicaiton is made available under the [MIT license](http://opensource.org/licenses/MIT).
+The code for this application is made available under the [MIT license](http://opensource.org/licenses/MIT).
