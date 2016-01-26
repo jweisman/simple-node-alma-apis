@@ -8,7 +8,7 @@ About the App
 The application demonstrates the following functionality:
 * Scan in an item and return the item information (uses the configuration and BIB APIs)
 
-As with all demo applications, we include the following disclaimer: in an effort to increase readability and clarity, only minimal error handling has been added.
+More detailed information about this sample is available in this [blog post](https://developers.exlibrisgroup.com/blog/Using-the-Alma-APIs-with-Node). As with all demo applications, we include the following disclaimer: in an effort to increase readability and clarity, only minimal error handling has been added.
 
 Installation Instructions
 -------------------------
