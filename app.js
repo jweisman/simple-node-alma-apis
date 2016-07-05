@@ -8,6 +8,7 @@ var session = require('express-session');
 
 var routes = require('./routes/index');
 var scanin = require('./routes/scan-in');
+var webhooks = require('./routes/webhooks');
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.use(function(req,res,next){
 
 app.use('/', routes);
 app.use('/scan-in', scanin);
+app.use('/webhooks', webhooks);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
