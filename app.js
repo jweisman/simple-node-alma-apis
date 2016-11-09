@@ -9,6 +9,8 @@ var session = require('express-session');
 var routes = require('./routes/index');
 var scanin = require('./routes/scan-in');
 var webhooks = require('./routes/webhooks');
+var notifications = require('./routes/notifications');
+var login = require('./routes/login');
 
 var app = express();
 
@@ -22,7 +24,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({
+app.use(sessionParser=session({
   key: 'app.session', 
   secret: '1sJ3aK1pXJuO', 
   resave: false, 
@@ -33,12 +35,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Make cookies available in view
 app.use(function(req,res,next){
     res.locals.cookies = req.cookies;
+    res.locals.session = req.session;
     next();
 });
 
 app.use('/', routes);
 app.use('/scan-in', scanin);
 app.use('/webhooks', webhooks);
+app.use('/notifications', notifications);
+app.use('/login', login);
+app.notifications=[];
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

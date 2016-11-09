@@ -1,18 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var nconf = require('nconf');
-var crypto = require('crypto');
+var utils = require('../utils.js')
 
 // Load configuration
 nconf.env()
    .file({ file: './config.json' });
-
-function validateSignature(body, secret, signature) {
-	var hash = crypto.createHmac('SHA256', secret)
-		.update(JSON.stringify(body))
-		.digest('base64');
-	return (hash === signature);
-}
 
 /* 
 GET - Challenge
@@ -29,7 +22,7 @@ router.post('/', function(req, res, next) {
 
 	// Validate signature
 	var secret = nconf.get('webhook_secret');
-	if (!validateSignature(req.body, 
+	if (!utils.validateSignature(req.body, 
 		secret, 
 		req.get('X-Exl-Signature'))) {
 		return res.status(401).send({errorMessage: 'Invalid Signature'});

@@ -1,0 +1,11 @@
+div.dropdown
+    a(id="dLabel", role="button", data-toggle="dropdown", data-target="#", href="#")
+        i.glyphicon.glyphicon-bell
+        span.badge.badge-notify(id="notification-count")
+    ul.dropdown-menu.notifications(role="menu", aria-labelledby="dLabel")
+        div.notification-heading
+            h4.menu-title Notifications
+            h4.menu-title.pull-right
+                a(href="javascript:clearNotifications()") Clear all
+            li.divider
+            div.notifications-wrapper

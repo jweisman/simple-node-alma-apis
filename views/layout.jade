@@ -8,15 +8,17 @@ html
     //indicate that our site is mobile optimized
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
-    //reference our site-specific css
-    link(rel='stylesheet', href='/stylesheets/style.css')
-
     //add bootstrap dependencies from CDNjs. Using a CDN to distribute these files puts less pressure
     //on our web server and will be delivered faster to the client than our own server.
     script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js')
     script(src='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js')
     link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap-theme.min.css')
     link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css')
+
+    //reference our site-specific css
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/notifications.css')
+
   body
   block navBar
     nav(class='navbar navbar-default', role='navigation')
@@ -32,5 +34,16 @@ html
                 ul(class='nav navbar-nav')
                     li
                         a(href='/scan-in') Scan-In
+                include notifications-nav
+                ul.nav.navbar-nav.navbar-right
+                    if session.username
+                        li 
+                            a(href='/login/logout') Signed in as #{session.username}
+                    else
+                        li 
+                            a(href='/login') Login
     block pageTitle
     block pageContent
+
+    //reference notifications js
+    script(src='/js/notifications.js')
