@@ -1,36 +1,33 @@
+"use strict";
+
 var express = require('express');
 var router = express.Router();
-var nconf = require('nconf');
 var utils = require('../utils.js');
 
 // Load configuration
+var nconf = require('nconf');
 nconf.env()
    .file({ file: './config.json' });
 
-/* 
-GET - Challenge
-*/
 router.get('/', function(req, res, next) {
-	if (!req.session.username) 
-		return res.redirect('/');
-	res.format({
-/*
-		html: function() {
-			res.render('notifications/index', 
-  			{ title: 'Notifications', notifications: req.app.notifications[req.session.username] }
-  		);
-  	},
-*/  	
-  	json: function() {
-  		res.json(req.app.notifications[req.session.username] || []);
+	res.format({ 	
+		// Handle webhook challenge
+		html: () => {
+			res.send(JSON.stringify({challenge: req.query.challenge}));
+		},
+		// Request from application
+  	json: () => {
+  		if (!req.session.username) return res.redirect('/');
+  		getRecord(req.app.db, req.session.username, (err, record) => {
+  			res.json(record.notifications);  			
+  		});
   	}
-	})
+	});
 });
 
 router.post('/', function(req, res, next) {
 	console.log('Received webhook request:', JSON.stringify(req.body));
 
-/*
 	// Validate signature
 	var secret = nconf.get('webhook_secret');
 	if (!utils.validateSignature(req.body, 
@@ -38,41 +35,49 @@ router.post('/', function(req, res, next) {
 		req.get('X-Exl-Signature'))) {
 		return res.status(401).send({errorMessage: 'Invalid Signature'});
 	}
-*/
 
 	// Handle webhook
 	var action = req.body.action.toLowerCase();
 	var username = req.body.notification_data.username;
-	if (action == 'notification') {
-		if (!(username in req.app.notifications)) {
-			req.app.notifications[username] = [];
-		}
-		notification = {
+	if (action == 'notification' && username) {
+		var notification = {
 			id: req.body.id,
 			title: req.body.notification_data.title,
 			body: req.body.notification_data.body,
-			date: req.body.notification_data.date,
-			username: username
+			date: req.body.notification_data.date
 		};
 
-		req.app.notifications[username].push(notification);
-		req.app.emit('notificationReceived', notification);
+		getRecord(req.app.db, username, function(err, record) {
+			// Check to see if notification has already been handled
+			if (!record.notifications.some(n=>n.id == notification.id)) {
+				record.notifications.push(notification);
+				updateRecord(req.app.db, record);
+				req.app.emit('notificationReceived', {username: username, notification: notification});
+			}
+		});
 	}
-
 	res.status(204).send();
 });
 
-/*
-router.delete('/:id', function(req, res, next) {
-	var id = req.params.id;
-	var index = req.app.notifications[req.session.username].map(function(el) { return el.id; }).indexOf(id);	
-	if (index > -1) req.app.notifications[req.session.username].splice(index,1); 
-	res.status(204).send();
-});
-*/
 router.get('/clear', function(req, res, next) {
-	delete req.app.notifications[req.session.username];
+	updateRecord(req.app.db, {username: req.session.username, notifications: []});
 	res.status(204).send();
 });
+
+function getRecord(db, username, callback) {
+	var cursor = db.collection('notifications').find( { "username": username } );
+	cursor.toArray(function(err, docs) {
+		let record = docs[0];
+		if (!record) record = {username: username, notifications: []};
+		callback(err, record);
+	});
+}
+
+function updateRecord(db, record) {
+	console.log('trying to update record', record.username);
+	db.collection('notifications').update(
+		{"username": record.username}, record, { upsert: true }
+	);
+}
 
 module.exports = router;

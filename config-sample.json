@@ -2,5 +2,9 @@
 	"alma_host": "https://api-na.hosted.exlibrisgroup.com",
 	"alma_path": "/almaws/v1", 
 	"api_key":   "{API_KEY}",
-	"webhook_secret": ""
+	"webhook_secret": "",
+	"alma_server": "https://na01.alma.exlibrisgroup.com",
+	"jwt_secret": "",
+	"institution": "",
+	"MONGODB_URI": ""	
 }

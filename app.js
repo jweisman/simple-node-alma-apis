@@ -6,12 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
-var routes = require('./routes/index');
-var scanin = require('./routes/scan-in');
-var webhooks = require('./routes/webhooks');
-var notifications = require('./routes/notifications');
-var login = require('./routes/login');
-
 var app = express();
 
 // view engine setup
@@ -39,12 +33,11 @@ app.use(function(req,res,next){
     next();
 });
 
-app.use('/', routes);
-app.use('/scan-in', scanin);
-app.use('/webhooks', webhooks);
-app.use('/notifications', notifications);
-app.use('/login', login);
-app.notifications=[];
+app.use('/', require('./routes/index'));
+app.use('/scan-in', require('./routes/scan-in'));
+app.use('/webhooks', require('./routes/webhooks'));
+app.use('/notifications', require('./routes/notifications'));
+app.use('/login', require('./routes/login'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

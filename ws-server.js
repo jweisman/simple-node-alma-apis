@@ -1,7 +1,12 @@
 var WSServer = require('ws').Server;
 var server = require('http').createServer();
-var Emitter = require('events').EventEmitter, event = new Emitter();
+const MongoClient = require('mongodb').MongoClient
 var app = require('./app');
+
+// Load configuration
+var nconf = require('nconf');
+nconf.env()
+   .file({ file: './config.json' });
 
 // Create web socket server on top of a regular http server
 var wss = new WSServer({
@@ -42,6 +47,12 @@ app.on('notificationReceived', function(data) {
 });
 
 var port = process.env.PORT || '3000';
-server.listen(port, function() {
-  console.log('http/ws server listening on', port);
+var db;
+
+MongoClient.connect(nconf.get('MONGODB_URI'), (err, database) => {
+  if (err) return console.log(err)
+  app.db = database;
+  server.listen(port, function() {
+    console.log('http/ws server listening on', port);
+  });
 });

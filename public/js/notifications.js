@@ -1,14 +1,7 @@
-function updateNotificationCount() {
-    $.getJSON("/notifications", function(data) {
-        console.log('notification count', data.length);
-        $("#notification-count").text(data.length || '');
-    });
-}
-
 function getNotifications() {
     $.getJSON("/notifications", function(data) {
         console.log('notification count', data.length);
-        $("#notification-count").text(data.length || '');
+        $("#notification-count").text(data.length || '').focus().blur(); // Bug in Safari: http://stackoverflow.com/questions/29969276/bootstrap-badge-dont-always-appear-in-safari
         $(".notifications-wrapper").empty();
         for(i in data) {
             n=data[i];
@@ -28,6 +21,17 @@ function clearNotifications() {
     });
 }
 
+function showNotification(msg) {
+    var html = $(`<div class="alert alert-info alert-dismissable page-alert">   
+        <button type="button" class="close"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        ${msg}
+        </div>`);
+    $('nav.navbar').before(html).slideDown();
+    html.fadeTo(2000, 500).slideUp(500, function(){
+        $(".alert-dismissable").alert('close');
+    });
+}
+
 $(document).ready(function(e) {
     getNotifications();
 
@@ -40,7 +44,7 @@ $(document).ready(function(e) {
     socket.onmessage = function(message) {
         console.log('Socket server message', message);
         let data = JSON.parse(message.data);
+        showNotification(`${data.notification.title} - ${data.notification.body}`);        
         getNotifications();
-        //$("#notification-new").addClass('glyphicon glyphicon-exclamation-sign');
     };
 });

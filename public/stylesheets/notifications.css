@@ -69,4 +69,8 @@
    left: -15px;
   }
 
+.alert{
+    margin-bottom: 10px;
+    border-radius: 0px;
+}
 
