@@ -3,6 +3,7 @@
 var express = require('express');
 var router = express.Router();
 var utils = require('../utils.js');
+var dateFormat = require('dateformat');
 
 // Load configuration
 var nconf = require('nconf');
@@ -38,15 +39,15 @@ router.post('/', function(req, res, next) {
 
 	// Handle webhook
 	var action = req.body.action.toLowerCase();
-	var username = req.body.notification_data.username;
+	var body = req.body.notification_data;
+	var username = body.receiver.primary_id;
 	if (action == 'notification' && username) {
 		var notification = {
 			id: req.body.id,
-			title: req.body.notification_data.title,
-			body: req.body.notification_data.body,
-			date: req.body.notification_data.date
+			title: body.user_request[0].title,
+			body: body.sms_content,
+			date: dateFormat(req.body.time, "d/mmm/yy HH:MM")
 		};
-
 		getRecord(req.app.db, username, function(err, record) {
 			// Check to see if notification has already been handled
 			if (!record.notifications.some(n=>n.id == notification.id)) {
