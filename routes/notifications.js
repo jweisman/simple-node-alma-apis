@@ -44,7 +44,7 @@ router.post('/', function(req, res, next) {
 	if (action == 'notification' && username) {
 		var notification = {
 			id: req.body.id,
-			title: body.user_request[0].title,
+			title: body.general_data.subject,
 			body: body.sms_content,
 			date: dateFormat(req.body.time, "d/mmm/yy HH:MM")
 		};
