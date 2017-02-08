@@ -40,6 +40,10 @@ $(document).ready(function(e) {
     var socket = new WebSocket(HOST);
     socket.onopen = function() {
         console.log('Socket open.');
+        var id = setInterval(function() {
+            socket.send(JSON.stringify(new Date()), function() {  });
+            console.log('Pinging server to keep alive');
+        }, 30000);
     };
     socket.onmessage = function(message) {
         console.log('Socket server message', message);

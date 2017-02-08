@@ -30,7 +30,7 @@ wss.on('connection', function connection(ws) {
   }); 
 
   ws.on('message', function incoming(message) {
-    console.log('received:',message);
+    // ignore incoming messages
   });
 
   ws.on('close', function close(ws) {
