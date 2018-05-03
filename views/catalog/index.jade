@@ -1,0 +1,80 @@
+extends ../layout
+
+block pageContent
+  h1 #{title}
+  style.
+    .alert, .warnings {display: none}
+
+  div.col-lg-6.col-sm-12(id="app")
+    div.alert.alert-danger {{ messages.error }}
+    div.alert.alert-success {{ messages.success }}
+      span(v-if="messages.warnings") &nbsp;View warnings 
+        span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
+        div.warnings
+          ul
+            li(v-for="warning in messages.warnings") {{ warning }}
+    div.alert.alert-warning
+    table.table
+      tr
+        th MMS_ID:
+        td
+          input(type="text", v-model="bib.mms_id" placeholder="MMS ID...")
+          button(class="btn btn-sm" v-on:click="retrieveBib") Retrieve BIB
+      tr
+        th Title:
+        td
+          input(type="text", v-model="bib.title")
+      tr
+        th Author:
+        td
+          input(type="text", v-model="bib.author")
+    button(class="btn btn-default updateBib" disabled v-on:click="updateBib") Update Bib
+
+  script.
+    $(document).on('click', '.glyphicon', function() {
+      $(this).toggleClass('glyphicon-chevron-right glyphicon-chevron-down');
+      $(this).next().toggle();
+    });  
+
+    var app = new Vue({
+      el: '#app',
+      data: { bib: { }, messages: { } },
+      methods: {
+        updateBib: function() {
+          $('.alert').hide();
+          var self = this;
+          var request = $.ajax({
+            dataType: "json",
+            method: "POST",
+            url: '/catalog/' + this.bib.mms_id,
+            data: this.bib
+          });
+
+          request.done(function(data) {
+            self.messages = data.messages;
+            $(".alert-success").show();
+          });
+
+          request.fail(function( jqXHR ) {
+            self.messages = jqXHR.responseJSON.messages;
+            $(".alert-danger").show();
+          });
+        },
+        retrieveBib: function() {
+          var self = this;
+          $('.alert').hide();
+          $.getJSON( "/catalog/" + this.bib.mms_id)
+          .done(function( data ) {
+            self.bib = data;
+            $(".updateBib").prop("disabled", false);
+          })
+          .fail(function( jqXHR ) {
+            self.bib = {};
+            self.messages = jqXHR.responseJSON.messages;
+            $(".alert-danger").show();
+            $(".updateBib").prop("disabled", true);
+          });
+        }
+      }
+    })  
+

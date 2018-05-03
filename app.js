@@ -38,6 +38,7 @@ app.use('/scan-in', require('./routes/scan-in'));
 app.use('/webhooks', require('./routes/webhooks'));
 app.use('/notifications', require('./routes/notifications'));
 app.use('/login', require('./routes/login'));
+app.use('/catalog', require('./routes/catalog'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
