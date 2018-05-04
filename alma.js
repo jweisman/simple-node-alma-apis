@@ -3,6 +3,7 @@ var request = require('request');
 var nconf = require('nconf');
 var xpath = require('xpath');
 var dom = require('xmldom').DOMParser;
+var serializer = require('xmldom').XMLSerializer;
 
 nconf.env()
    .file({ file: './config.json' });
@@ -40,7 +41,7 @@ function performRequest(endpoint, method, data, callback, contentType='json') {
       dataString = JSON.stringify(data);
       headers['Content-Type'] = 'application/json';
     } else {
-      dataString = data;
+      dataString = new serializer().serializeToString(data);;
       headers['Content-Type'] = 'application/xml';
     }
     headers['Content-Length'] = dataString.length;
@@ -50,26 +51,30 @@ function performRequest(endpoint, method, data, callback, contentType='json') {
   request(
   	options,
   	function(err, response, body) {
-      if (!err && ('' + response.statusCode).match(/^[4-5]\d\d$/)) {
-        console.log('Error from Alma: ' + body);
-        var message;
-        try {
-          if (contentType=='json') {
-            var obj = JSON.parse(body);
-            message = obj.errorList.error[0].errorMessage + " (" + obj.errorList.error[0].errorCode + ")";
-          } else {
-            var doc = new dom().parseFromString(body);
-            var select = xpath.useNamespaces({"alma": "http://com/exlibris/urm/general/xmlbeans"});
-            message = select('/alma:web_service_result/alma:errorList/alma:error/alma:errorMessage', doc)[0]
-              .firstChild.data;
+      try {
+        var obj = (contentType=='json' ? 
+          JSON.parse(body) : new dom().parseFromString(body));
+        if (!err && ('' + response.statusCode).match(/^[4-5]\d\d$/)) {
+          console.log('Error from Alma: ' + body);
+          var message;
+          try {
+            if (contentType=='json') {
+              message = obj.errorList.error[0].errorMessage + " (" + obj.errorList.error[0].errorCode + ")";
+            } else {
+              var select = xpath.useNamespaces({"alma": "http://com/exlibris/urm/general/xmlbeans"});
+              message = select('/alma:web_service_result/alma:errorList/alma:error/alma:errorMessage', obj)[0]
+                .firstChild.data;
+            }
+          } catch (e) {
+            message = "Unknown error from Alma.";
           }
-        } catch (e) {
-          message = "Unknown error from Alma.";
+          err = new Error(message);
         }
-        err = new Error(message);
+      } catch (e) {
+        err = new Error("Cannot parse response from Alma");
       }
   		if(err) callback(err);
-  		else callback(null, body);
+  		else callback(null, obj);
   	});
 }
 
@@ -77,7 +82,7 @@ exports.get = function(url, callback) {
 	performRequest(url, 'GET', null, 
 		function(err, data) {
       if (err) callback(err);
-      else callback(null, JSON.parse(data));
+      else callback(null, data);
 		});
 };
 
@@ -101,7 +106,7 @@ exports.post = function(url, data, callback) {
 	performRequest(url, 'POST', data, 
 		function(err, data) {
       if (err) callback(err);
-			else callback(null, JSON.parse(data));
+			else callback(null, data);
 		});
 };
 
@@ -109,7 +114,7 @@ exports.put = function(url, data, callback) {
   performRequest(url, 'PUT', data, 
     function(err, data) {
       if (err) callback(err);
-      else callback(null, JSON.parse(data));
+      else callback(null, data);
     });
 };
 

@@ -3,8 +3,6 @@ var router = express.Router();
 var async = require('async');
 var xpath = require('xpath');
 var constants = require('../constants');
-var dom = require('xmldom').DOMParser;
-var serializer = require('xmldom').XMLSerializer;
 
 var alma = require('../alma.js');
 
@@ -21,20 +19,15 @@ router.get('/:mms_id', function(req, res, next) {
 
 router.post('/:mms_id', function(req, res, next) {
   alma.getXmlp('/bibs/'+req.params.mms_id)
-  .then(data=>{
-    var doc = new dom().parseFromString(data);
+  .then(doc=>{
     xpath.select(constants.XPATH_AUTHOR, doc)[0]
       .firstChild.data=req.body.author;
     xpath.select(constants.XPATH_TITLE, doc)[0]
       .firstChild.data=req.body.title;
-    return new serializer().serializeToString(doc);
-  })
-  .then(bib=>{
     return alma.putXmlp('/bibs/'+req.params.mms_id+'?'+constants.UPDATE_BIB_QS,
-      bib);
+      doc);    
   })
-  .then(data=>{
-    var doc = new dom().parseFromString(data);
+  .then(doc=>{
     var warnings = xpath.select(constants.XPATH_WARNINGS, doc)
       .map(x=>x.firstChild.data);            
     res.send({messages: { 
