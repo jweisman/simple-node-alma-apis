@@ -1,6 +1,7 @@
 var querystring = require('querystring');
 var request = require('request');
 var nconf = require('nconf');
+var constants = require('./constants');
 var xpath = require('xpath');
 var dom = require('xmldom').DOMParser;
 var serializer = require('xmldom').XMLSerializer;
@@ -59,10 +60,11 @@ function performRequest(endpoint, method, data, callback, contentType='json') {
           var message;
           try {
             if (contentType=='json') {
-              message = obj.errorList.error[0].errorMessage + " (" + obj.errorList.error[0].errorCode + ")";
+              message = obj.errorList.error[0].errorMessage + " (" + 
+                obj.errorList.error[0].errorCode + ")";
             } else {
-              var select = xpath.useNamespaces({"alma": "http://com/exlibris/urm/general/xmlbeans"});
-              message = select('/alma:web_service_result/alma:errorList/alma:error/alma:errorMessage', obj)[0]
+              var select = xpath.useNamespaces(constants.ALMAWS_NS);
+              message = select(constants.XPATH_ALMAWS_ERROR, obj)[0]
                 .firstChild.data;
             }
           } catch (e) {

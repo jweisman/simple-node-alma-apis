@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var async = require('async');
 var xpath = require('xpath');
 var constants = require('../constants');
 
