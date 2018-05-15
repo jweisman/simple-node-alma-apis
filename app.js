@@ -26,6 +26,9 @@ app.use(sessionParser=session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Environment variables
+app.locals.env = app.settings.env;
+
 // Make cookies available in view
 app.use(function(req,res,next){
     res.locals.cookies = req.cookies;

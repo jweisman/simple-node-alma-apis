@@ -14,7 +14,7 @@ html
     script(src='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js')
     link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap-theme.min.css')
     link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css')
-    script(src='//cdn.jsdelivr.net/npm/vue/dist/vue.js')
+    script(src="//cdn.jsdelivr.net/npm/vue/dist/vue#{env == 'production' ? '.min' : ''}.js")
 
     //reference our site-specific css
     link(rel='stylesheet', href='/stylesheets/style.css')

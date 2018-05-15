@@ -10,31 +10,28 @@ router.get('/', function(req, res, next) {
     { title: 'Catalog' });  
 });
 
-router.get('/:mms_id', function(req, res, next) {
-  alma.getp('/bibs/' + req.params.mms_id + '?view=brief')
-  .then(data=>res.send(data))
-  .catch(err=>sendErr(res,err));
+router.get('/:mms_id', async function(req, res, next) {
+  try {
+    res.send(await alma.getp('/bibs/' + req.params.mms_id + '?view=brief'));
+  } catch (err) { sendErr(res,err); }
 });
 
-router.post('/:mms_id', function(req, res, next) {
-  alma.getXmlp('/bibs/'+req.params.mms_id)
-  .then(doc=>{
+router.post('/:mms_id', async function(req, res, next) {
+  try {
+    var doc = await alma.getXmlp('/bibs/'+req.params.mms_id);
     xpath.select(constants.XPATH_AUTHOR, doc)[0]
       .firstChild.data=req.body.author;
     xpath.select(constants.XPATH_TITLE, doc)[0]
       .firstChild.data=req.body.title;
-    return alma.putXmlp('/bibs/'+req.params.mms_id+'?'+constants.UPDATE_BIB_QS,
-      doc);    
-  })
-  .then(doc=>{
+    doc = await alma.putXmlp('/bibs/'+req.params.mms_id+'?'+
+      constants.UPDATE_BIB_QS, doc);    
     var warnings = xpath.select(constants.XPATH_WARNINGS, doc)
       .map(x=>x.firstChild.data);            
     res.send({messages: { 
       success: "BIB updated successfully.", 
       warnings: warnings }
-    });
-  })
-  .catch(err=>sendErr(res,err));
+      });
+  } catch (err) { sendErr(res,err); }
 })
 
 function sendErr(res,err) {
