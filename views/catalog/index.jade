@@ -6,7 +6,8 @@ block pageContent
   div.col-lg-6.col-sm-12(id="app")
     div.alert.alert-danger(v-show="messages.error") {{ messages.error }}
     div.alert.alert-success(v-show="messages.success") {{ messages.success }}
-      span(v-if="messages.warnings") &nbsp;View warnings 
+    div.alert.alert-warning(v-show="messages.warnings")
+      span(v-if="messages.warnings") &nbsp;The record was saved with warnings. View  
         span.glyphicon.glyphicon-chevron-right(aria-hidden="true")
         div.warnings(style="display: none;")
           ul
