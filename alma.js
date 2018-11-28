@@ -5,9 +5,9 @@ var nconf = require('nconf');
 nconf.env()
    .file({ file: './config.json' });
 
-var host = nconf.get('alma_host');
-var path = nconf.get('alma_path');
-var apikey = nconf.get('api_key');
+var host = nconf.get('ALMA_HOST');
+var path = nconf.get('ALMA_PATH');
+var apikey = nconf.get('API_KEY');
 
 function performRequest(endpoint, method, data, callback) {
   var dataString = JSON.stringify(data);

@@ -17,8 +17,8 @@ On any machine with [Node.js](https://nodejs.org) and [Git](http://git-scm.com/)
 1. Clone this repository: `git clone https://github.com/jweisman/simple-node-alma-apis.git`
 2. Install dependencies: `npm install`
 3. Copy the `config-example.json` file to `config.json` and replace the placeholder values:
-  * `alma_host` and `alma_path` from the [Alma API Getting Started Guide](https://developers.exlibrisgroup.com/alma/apis)
-  * `api_key` from the [Ex Libris Developer Network](https://developers.exlibrisgroup.com/) dashboard
+  * `ALMA_HOST` and `ALMA_PATH` from the [Alma API Getting Started Guide](https://developers.exlibrisgroup.com/alma/apis)
+  * `API_KEY` from the [Ex Libris Developer Network](https://developers.exlibrisgroup.com/) dashboard
 4. Run the application: `npm start`
 
 License

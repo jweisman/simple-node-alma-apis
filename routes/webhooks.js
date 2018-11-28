@@ -28,7 +28,7 @@ router.post('/', function(req, res, next) {
 	console.log('Received webhook request:', JSON.stringify(req.body));
 
 	// Validate signature
-	var secret = nconf.get('webhook_secret');
+	var secret = nconf.get('WEBHOOK_SECRET');
 	if (!validateSignature(req.body, 
 		secret, 
 		req.get('X-Exl-Signature'))) {

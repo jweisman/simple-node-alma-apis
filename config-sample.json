@@ -1,6 +1,6 @@
 { 
-	"alma_host": "https://api-na.hosted.exlibrisgroup.com",
-	"alma_path": "/almaws/v1", 
-	"api_key":   "{API_KEY}",
-	"webhook_secret": ""
+	"ALMA_HOST": "https://api-na.hosted.exlibrisgroup.com",
+	"ALMA_PATH": "/almaws/v1", 
+	"API_KEY":   "{API_KEY}",
+	"WEBHOOK_SECRET": ""
 }
