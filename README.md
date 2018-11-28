@@ -1,4 +1,7 @@
 # Simple Node Example for Alma APIs
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 Introduction
 ------------
 This repository provides a small simple example of using the [Alma APIs](https://developers.exlibrisgroup.com/alma/apis) in a [Node.js](https://nodejs.org/) app.
