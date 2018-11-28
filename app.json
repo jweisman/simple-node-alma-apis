@@ -1,0 +1,21 @@
+{
+  "name": "Simple Node Alma APIs",
+  "description": "A simple node application to illustrate using APIs from Ex Libris Alma",
+  "repository": "https://github.com/jweisman/simple-node-alma-apis",
+  "env": {
+	"alma_host": {
+		"description": "URL for the Alma APIs",
+		"value": "https://api-na.hosted.exlibrisgroup.com"
+	},
+	"alma_path": {
+		"description": "Path for the Alma APIs",
+		"value": "/almaws/v1"
+	},
+	"api_key": {
+		"description": "Your API key. See https://developers.exlibrisgroup.com/alma/apis"
+	},
+	"webhook_secret": {
+		"description": "Used to validate webhooks from Alma. See https://developers.exlibrisgroup.com/alma/integrations/webhooks"
+	}
+  }
+}
