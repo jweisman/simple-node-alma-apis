@@ -49,7 +49,8 @@ app.on('notificationReceived', function(data) {
 var port = process.env.PORT || '3000';
 var db;
 
-MongoClient.connect(nconf.get('MONGODB_URI'), (err, database) => {
+MongoClient.connect(nconf.get('MONGODB_URI'), { useNewUrlParser: true, useUnifiedTopology: true }, 
+(err, database) => {
   if (err) return console.log(err)
   app.db = database;
   server.listen(port, function() {
